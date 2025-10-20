@@ -34,10 +34,7 @@ const provinceCode = {
     '甘肃': '620000',
     '青海': '630000',
     '宁夏': '640000',
-    '新疆': '650000',
-    '台湾': '710000',
-    '香港': '810000',
-    '澳门': '820000'
+    '新疆': '650000'
 };
 
 // 准备地图数据
@@ -50,40 +47,101 @@ for (let city in licensePlateData) {
     });
 }
 
+// 延迟函数
+function delay(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 // 加载所有省份的市级地图数据
 async function loadAllProvinceMaps() {
     const allFeatures = [];
+    let successCount = 0;
+    let failCount = 0;
 
     // 显示加载提示
     myChart.showLoading({
-        text: '正在加载地图数据...',
+        text: '正在加载地图数据...\n请稍候',
         color: '#667eea',
         textColor: '#000',
         maskColor: 'rgba(255, 255, 255, 0.8)',
         zlevel: 0
     });
 
+    console.log('开始加载省份地图数据...');
+
     try {
-        // 加载所有省份的地图数据
-        const promises = Object.entries(provinceCode).map(async ([province, code]) => {
-            try {
-                const response = await fetch(`https://geo.datav.aliyun.com/areas_v3/bound/${code}_full.json`);
-                const data = await response.json();
-                return data.features;
-            } catch (error) {
-                console.warn(`加载 ${province} 地图数据失败:`, error);
-                return [];
-            }
-        });
+        // 分批加载省份数据，避免并发过多
+        const batchSize = 5;
+        const entries = Object.entries(provinceCode);
 
-        const results = await Promise.all(promises);
+        for (let i = 0; i < entries.length; i += batchSize) {
+            const batch = entries.slice(i, i + batchSize);
 
-        // 合并所有特征
-        results.forEach(features => {
-            if (features && Array.isArray(features)) {
-                allFeatures.push(...features);
+            const batchPromises = batch.map(async ([province, code]) => {
+                try {
+                    const url = `https://geo.datav.aliyun.com/areas_v3/bound/${code}_full.json`;
+                    console.log(`正在加载: ${province} (${code})`);
+
+                    const response = await fetch(url, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+
+                    if (data && data.features && Array.isArray(data.features)) {
+                        successCount++;
+                        console.log(`✓ ${province} 加载成功，包含 ${data.features.length} 个区域`);
+                        return data.features;
+                    } else {
+                        console.warn(`${province} 数据格式错误`);
+                        return [];
+                    }
+                } catch (error) {
+                    failCount++;
+                    console.warn(`✗ 加载 ${province} 失败:`, error.message);
+                    return [];
+                }
+            });
+
+            const batchResults = await Promise.all(batchPromises);
+
+            // 合并本批次的特征
+            batchResults.forEach(features => {
+                if (features && Array.isArray(features) && features.length > 0) {
+                    allFeatures.push(...features);
+                }
+            });
+
+            // 更新加载提示
+            myChart.showLoading({
+                text: `正在加载地图数据...\n已加载: ${successCount}/${entries.length} 个省份`,
+                color: '#667eea',
+                textColor: '#000',
+                maskColor: 'rgba(255, 255, 255, 0.8)',
+                zlevel: 0
+            });
+
+            // 批次间延迟，避免请求过快
+            if (i + batchSize < entries.length) {
+                await delay(200);
             }
-        });
+        }
+
+        console.log(`\n加载完成统计:`);
+        console.log(`成功: ${successCount} 个省份`);
+        console.log(`失败: ${failCount} 个省份`);
+        console.log(`总特征数: ${allFeatures.length} 个区域`);
+
+        if (allFeatures.length === 0) {
+            throw new Error('未能加载任何地图数据，请检查网络连接或刷新页面重试');
+        }
 
         // 创建完整的 GeoJSON
         const chinaGeoJson = {
@@ -93,6 +151,7 @@ async function loadAllProvinceMaps() {
 
         // 注册地图
         echarts.registerMap('china', chinaGeoJson);
+        console.log('地图注册成功！');
 
         // 隐藏加载提示
         myChart.hideLoading();
@@ -184,6 +243,7 @@ async function loadAllProvinceMaps() {
 
         // 设置配置并渲染
         myChart.setOption(option);
+        console.log('地图渲染成功！');
 
         // 点击事件处理
         myChart.on('click', function(params) {
@@ -216,7 +276,38 @@ async function loadAllProvinceMaps() {
     } catch (error) {
         myChart.hideLoading();
         console.error('加载地图数据失败:', error);
-        alert('地图数据加载失败，请检查网络连接');
+
+        // 显示错误信息
+        const errorDiv = document.createElement('div');
+        errorDiv.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            z-index: 10000;
+            text-align: center;
+            max-width: 500px;
+        `;
+        errorDiv.innerHTML = `
+            <h3 style="color: #f44336; margin-bottom: 15px;">地图加载失败</h3>
+            <p style="margin-bottom: 15px;">${error.message}</p>
+            <p style="color: #666; font-size: 14px;">成功加载: ${successCount} 个省份<br>失败: ${failCount} 个省份</p>
+            <button onclick="location.reload()" style="
+                margin-top: 15px;
+                padding: 10px 30px;
+                background: #667eea;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 16px;
+            ">重新加载</button>
+        `;
+        document.body.appendChild(errorDiv);
     }
 }
 
