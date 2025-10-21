@@ -25,7 +25,7 @@
 
 **GitHub Pages**: https://zja2004.github.io/License-plate-number-and-map/
 
-**注意**: 由于 GitHub Pages 的网络限制，在线版本可能无法加载地图数据。建议下载到本地使用。
+项目已包含本地地图数据文件（china.json），无需外部网络请求，可直接在 GitHub Pages 上使用。
 
 ### 本地部署
 
@@ -59,6 +59,7 @@ cd 车牌地图
 ├── style.css           # 样式文件
 ├── data.js             # 车牌号数据库（300+ 个城市）
 ├── app.js              # 地图交互逻辑
+├── china.json          # 中国地图 GeoJSON 数据（569KB）
 ├── .gitignore          # Git 忽略文件配置
 └── README.md           # 项目说明文档
 ```
