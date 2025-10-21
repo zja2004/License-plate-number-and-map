@@ -2,7 +2,15 @@
   "permissions": {
     "allow": [
       "Bash(git init)",
-      "Bash(git add .)"
+      "Bash(git add .)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: 中国地图车牌号查询系统\n\n- 添加完整的市级地图显示功能\n- 实现点击城市查看车牌号功能\n- 包含全国300+个城市的车牌数据\n- 支持地图缩放和拖拽交互\n- 添加精美的UI设计和动画效果\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git remote add origin https://github.com/zja2004/License-plate-number-and-map.git)",
+      "Bash(git branch -M main)",
+      "Bash(git push -u origin main)",
+      "Bash(git add app.js)",
+      "Bash(git commit -m \"$(cat <<''EOF''\n修复 GitHub Pages 地图加载问题\n\n- 添加分批加载机制，避免并发请求过多\n- 添加详细的控制台日志输出，便于调试\n- 添加加载进度提示\n- 添加错误处理和友好的错误提示界面\n- 批次间添加延迟，提高加载成功率\n- 移除港澳台数据源（避免加载失败）\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push)",
+      "Bash(git commit -m \"$(cat <<''EOF''\n简化地图加载逻辑，使用更可靠的数据源\n\n- 改用 jsdelivr CDN 的 china.json 地图数据\n- 简化加载流程，只需一次请求\n- 移除复杂的分批加载逻辑\n- 添加详细的控制台日志\n- 优化错误提示信息\n- 提高 GitHub Pages 兼容性\n\n注意：此版本使用省级地图，后续版本将增加市级边界\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
