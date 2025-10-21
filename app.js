@@ -1,3 +1,7 @@
+// 版本标识
+console.log('=== 中国地图车牌号查询系统 v2.0 ===');
+console.log('使用本地地图文件: china.json');
+
 // 初始化地图
 const mapContainer = document.getElementById('map');
 const myChart = echarts.init(mapContainer);
@@ -11,7 +15,7 @@ myChart.showLoading({
     zlevel: 0
 });
 
-console.log('开始加载地图数据...');
+console.log('开始加载本地地图数据...');
 
 // 准备地图数据
 const mapData = [];

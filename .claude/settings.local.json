@@ -14,7 +14,8 @@
       "WebFetch(domain:fastly.jsdelivr.net)",
       "Bash(git commit -m \"$(cat <<''EOF''\n添加多CDN备用加载方案\n\n- 添加3个不同的CDN数据源作为备选\n- 自动尝试多个源直到成功加载\n- 改进错误日志，显示每个源的加载状态\n- 更新README说明GitHub Pages可能的限制\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(curl -o china.json \"https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json\")",
-      "Bash(git commit -m \"$(cat <<''EOF''\n添加本地地图数据文件，解决外部加载问题\n\n- 下载并包含 china.json 地图数据文件（569KB）\n- 修改代码使用本地地图文件而非外部 API\n- 完全解决 GitHub Pages 的跨域和网络限制问题\n- 更新 README 说明项目结构\n- 现在可以完全离线使用\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\n添加本地地图数据文件，解决外部加载问题\n\n- 下载并包含 china.json 地图数据文件（569KB）\n- 修改代码使用本地地图文件而非外部 API\n- 完全解决 GitHub Pages 的跨域和网络限制问题\n- 更新 README 说明项目结构\n- 现在可以完全离线使用\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit -m \"$(cat <<''EOF''\n添加版本标识，强制刷新缓存\n\n- 在 HTML 中添加版本参数 (?v=2)\n- 在 JS 中添加明确的版本日志\n- 确保浏览器加载最新版本\n- 修复 GitHub Pages 缓存问题\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []
