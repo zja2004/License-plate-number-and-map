@@ -23,7 +23,9 @@
 
 ### 在线使用
 
-直接用浏览器打开 `index.html` 文件即可使用。
+**GitHub Pages**: https://zja2004.github.io/License-plate-number-and-map/
+
+**注意**: 由于 GitHub Pages 的网络限制，在线版本可能无法加载地图数据。建议下载到本地使用。
 
 ### 本地部署
 

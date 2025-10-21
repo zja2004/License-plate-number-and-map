@@ -23,18 +23,40 @@ for (let city in licensePlateData) {
     });
 }
 
-// 使用 jsdelivr CDN 加载中国地图的 GeoJSON 数据
-// 这个数据源包含省级和市级边界
-const mapUrl = 'https://fastly.jsdelivr.net/npm/echarts@5.4.3/map/json/china.json';
+// 尝试多个 CDN 源加载地图数据
+const mapUrls = [
+    'https://cdn.jsdelivr.net/npm/echarts@5.4.3/map/json/china.json',
+    'https://unpkg.com/echarts@5.4.3/map/json/china.json',
+    'https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json'
+];
 
-fetch(mapUrl)
-    .then(response => {
-        console.log('地图数据请求状态:', response.status);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+async function loadMapData() {
+    let lastError = null;
+
+    for (let i = 0; i < mapUrls.length; i++) {
+        try {
+            console.log(`尝试加载地图数据源 ${i + 1}/${mapUrls.length}: ${mapUrls[i]}`);
+            const response = await fetch(mapUrls[i]);
+            console.log('地图数据请求状态:', response.status);
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const chinaJson = await response.json();
+            console.log('地图数据加载成功');
+            console.log('地图特征数量:', chinaJson.features ? chinaJson.features.length : 0);
+            return chinaJson;
+        } catch (error) {
+            console.warn(`数据源 ${i + 1} 加载失败:`, error.message);
+            lastError = error;
         }
-        return response.json();
-    })
+    }
+
+    throw new Error(`所有数据源均加载失败。最后的错误: ${lastError.message}`);
+}
+
+loadMapData()
     .then(chinaJson => {
         console.log('地图数据加载成功');
         console.log('地图特征数量:', chinaJson.features ? chinaJson.features.length : 0);
